@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>space.png</file>
+        <file>bg.png</file>
+        <file>ld.gif</file>
+        <file>input.png</file>
+    </qresource>
+</RCC>
