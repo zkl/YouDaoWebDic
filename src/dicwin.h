@@ -15,7 +15,7 @@ public:
 	dicwin(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~dicwin();
 
-	void search(QString & text);
+	void search(const QString & text);
 
 private slots:
 	void event_to_hide();

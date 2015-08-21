@@ -11,14 +11,15 @@
 #include <QMovie>
 #include "dicwin.h"
 
+
 dicwin::dicwin(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
 {
 	setupUi(this);
-	setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);   //ÉèÖÃ´°ÌåÎÞ±ß¿ò
-	setAttribute(Qt::WA_TranslucentBackground);//ÉèÖÃ±³¾°Í¸Ã÷
+	setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);   //è®¾ç½®çª—ä½“æ— è¾¹æ¡†
+	setAttribute(Qt::WA_TranslucentBackground);//è®¾ç½®èƒŒæ™¯é€æ˜Ž
 
-	pic.load(":/image/bg.png");//¼ÓÔØÍ¼Ïñ
+	pic.load(":/image/bg.png");//åŠ è½½å›¾åƒ
 
 	this->resize(pic.size());
 	connect(lineEdit, SIGNAL(returnPressed ()), this, SLOT(finished()));
@@ -31,12 +32,16 @@ dicwin::dicwin(QWidget *parent, Qt::WFlags flags)
 	lineEdit->setStyleSheet("background-color: rgba(0, 0, 0, 0);border: 0px none; color: rgb(255, 252, 213);");
 	textEdit->setStyleSheet("background-color: rgba(0, 0, 0, 0);border: 0px none; color: rgb(188, 188, 188);");
 
-	qnam = new QNetworkAccessManager(this); //ÐÂ½¨QNetworkAccessManager¶ÔÏó 
+	qnam = new QNetworkAccessManager(this); //æ–°å»ºQNetworkAccessManagerå¯¹è±¡ 
 	connect(qnam,SIGNAL(finished(QNetworkReply*)), this,SLOT(replyFinished(QNetworkReply*)));
 
 	hide_key = new QShortcut(this);
 	hide_key->setKey(Qt::Key_Escape);
+#ifdef WINDOWS
 	connect(hide_key, SIGNAL(activated ()), this, SLOT(event_to_hide()));
+#else
+	connect(hide_key, SIGNAL(activated ()), this, SLOT(close()));
+#endif
 }
 
 dicwin::~dicwin()
@@ -55,12 +60,12 @@ void dicwin::finished()
 	search(lineEdit->text());
 }
 
-void dicwin::search(QString & text)
+void dicwin::search(const QString & text)
 {
 	if(text.size() <= 0)
 		return ;
 
-	/*   Ð§¹û  */
+	/*   æ•ˆæžœ  */
 	textEdit->setText("");
 	lineEdit->setText(text);
 	label->show();
@@ -98,10 +103,10 @@ void dicwin::httpReadyRead()
 	if(errorCode == 0)
 	{
 		QString text;
-		text += QString::fromLocal8Bit("<strong>Òô±ê: </strong>");
+		text += QString::fromLocal8Bit("<strong>éŸ³æ ‡: </strong>");
 		text += root.firstChildElement("basic").firstChildElement("phonetic").text();
 		
-		text += QString::fromLocal8Bit("<br><strong>½âÊÍ: </strong><ul>");
+		text += QString::fromLocal8Bit("<br><strong>è§£é‡Š: </strong><ul>");
 		QDomElement explanRoot = root.firstChildElement("basic").firstChildElement("explains");
 		QDomNodeList explans = explanRoot.elementsByTagName("ex");
 		for(int i=0; i<explans.size(); i++)
@@ -113,7 +118,7 @@ void dicwin::httpReadyRead()
 
 		text += "</ul>";
 
-		text += QString::fromLocal8Bit("<hr><strong>ÍøÂç½âÊÍ: </strong>");
+		text += QString::fromLocal8Bit("<hr><strong>ç½‘ç»œè§£é‡Š: </strong>");
 
 		QDomElement webRoot = root.firstChildElement("web");
 		QDomNodeList webExp = webRoot.elementsByTagName("explain");
@@ -138,7 +143,7 @@ void dicwin::httpReadyRead()
 	}
 	else
 	{
-		textEdit->setText(QString::fromLocal8Bit("·­ÒëÊ§°Ü"));
+		textEdit->setText(QString::fromLocal8Bit("ç¿»è¯‘å¤±è´¥"));
 	}
 }
 
@@ -152,7 +157,7 @@ void dicwin::replyFinished(QNetworkReply *reply)
 
 void dicwin::mousePressEvent(QMouseEvent *event)    
 {    
-	//°´×¡×ó¼ü¿ÉÒÔÍÐ¶¯´°¿Ú£¬°´ÏÂÓÒ¼ü¹Ø±Õ³ÌÐò    
+	//æŒ‰ä½å·¦é”®å¯ä»¥æ‰˜åŠ¨çª—å£ï¼ŒæŒ‰ä¸‹å³é”®å…³é—­ç¨‹åº    
 	if(event->button() == Qt::LeftButton)    
 	{    
 		curPos = event->globalPos() - frameGeometry().topLeft();    
